@@ -10,6 +10,7 @@
         "-restore",
         "${workspaceFolder}/src/Lidarr.sln",
         "-p:GenerateFullPaths=true",
+        "-p:TargetFramework=net8.0",
         "-p:Configuration=Debug",
         "-p:Platform=Posix",
         "-consoleloggerparameters:NoSummary;ForceNoAlign"
@@ -17,12 +18,19 @@
       "problemMatcher": "$msCompile"
     },
     {
+      "label": "build and link frontend",
+      "type": "shell",
+      "command": "yarn --cwd ${workspaceFolder}/frontend install && yarn --cwd ${workspaceFolder}/frontend build && mkdir -p ${workspaceFolder}/_output/net8.0 && rm -rf ${workspaceFolder}/_output/net8.0/UI && ln -s ${workspaceFolder}/_output/UI ${workspaceFolder}/_output/net8.0/UI",
+      "problemMatcher": []
+    },    
+    {
       "label": "publish",
       "command": "dotnet",
       "type": "process",
       "args": [
         "publish",
         "${workspaceFolder}/src/Lidarr.sln",
+        "-p:TargetFramework=net8.0",
         "-property:GenerateFullPaths=true",
         "-consoleloggerparameters:NoSummary;ForceNoAlign"
       ],
@@ -35,6 +43,8 @@
       "args": [
         "watch",
         "run",
+        "--framework",
+        "net8.0",
         "--project",
         "${workspaceFolder}/src/Lidarr.sln"
       ],

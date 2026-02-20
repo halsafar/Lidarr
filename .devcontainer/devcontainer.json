@@ -8,12 +8,17 @@
       "nodeGypDependencies": true,
       "version": "20",
       "nvmVersion": "latest"
-    }
+    },
+    "ghcr.io/devcontainers/features/github-cli:1": {},
   },
   "forwardPorts": [8686],
   "customizations": {
     "vscode": {
-      "extensions": ["esbenp.prettier-vscode"]
+      "extensions": [
+        "esbenp.prettier-vscode",
+        "ms-dotnettools.csdevkit",
+        "GitHub.vscode-pull-request-github"
+      ]  
     }
   }
 }

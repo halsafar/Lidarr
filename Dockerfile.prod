@@ -1,0 +1,34 @@
+#From: https://github.com/linuxserver/docker-lidarr/blob/master/Dockerfile
+FROM ghcr.io/linuxserver/baseimage-alpine:3.23
+
+LABEL org.opencontainers.image.source=https://github.com/halsafar/Lidarr
+LABEL org.opencontainers.image.description="Lidarr Halsafar"
+
+RUN \
+  echo "**** install packages ****" && \
+  apk add -U --upgrade --no-cache \
+    chromaprint \
+    icu-libs \
+    sqlite-libs \
+    xmlstarlet \
+    aspnetcore8-runtime
+
+# Install our local published build and tag
+RUN mkdir -p /app/lidarr/bin
+COPY ./_output/net8.0/linux-musl-x64/ /app/lidarr/bin/
+COPY ./_output/UI /app/lidarr/bin/UI/
+
+RUN echo -e "UpdateMethod=docker\nBranch=qol-hal\nPackageVersion=$(date +%Y.%m.%d)\nPackageAuthor=Halsafar" > /app/lidarr/package_info
+
+# Start on boot
+RUN mkdir -p /etc/services.d/lidarr
+RUN printf "#!/usr/bin/with-contenv bash\n\
+echo \"Starting Lidarr-Halsafar...\"\n\
+sleep 2\n\
+cd /app/lidarr/bin\n\
+s6-setuidgid abc /app/lidarr/bin/Lidarr -nobrowser -data=/config" \
+> /etc/services.d/lidarr/run && \
+  chmod +x /etc/services.d/lidarr/run
+
+EXPOSE 8686
+VOLUME /config
