@@ -23,6 +23,8 @@ dotnet publish src/Lidarr.sln \
   -p:TargetFramework=net8.0 \
   -p:GenerateFullPaths=true \
   -p:Version="$FULL_VERSION" \
+  -p:AssemblyVersion="${UPSTREAM_TAG}" \
+  -p:FileVersion="$FULL_VERSION" \
   -p:InformationalVersion="$FULL_VERSION" \
   -c Release \
   -r linux-musl-x64 \
