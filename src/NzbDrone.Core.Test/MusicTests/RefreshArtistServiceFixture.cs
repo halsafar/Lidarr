@@ -87,7 +87,7 @@ namespace NzbDrone.Core.Test.MusicTests
                 .Returns(new List<RootFolder>());
 
             Mocker.GetMock<IMonitorNewAlbumService>()
-                .Setup(x => x.ShouldMonitorNewAlbum(It.IsAny<Album>(), It.IsAny<List<Album>>(), It.IsAny<NewItemMonitorTypes>()))
+                .Setup(x => x.ShouldMonitorNewAlbum(It.IsAny<Album>(), It.IsAny<List<Album>>(), It.IsAny<NewItemMonitorTypes>(), It.IsAny<MonitorAlbumTypeFilter>()))
                 .Returns(true);
 
             Mocker.GetMock<IAutoTaggingService>()
@@ -185,7 +185,7 @@ namespace NzbDrone.Core.Test.MusicTests
             Subject.Execute(new RefreshArtistCommand(new List<int> { _artist.Id }));
 
             Mocker.GetMock<IMonitorNewAlbumService>()
-                .Verify(x => x.ShouldMonitorNewAlbum(newAlbum, _albums, _artist.MonitorNewItems), Times.Once());
+                .Verify(x => x.ShouldMonitorNewAlbum(newAlbum, _albums, _artist.MonitorNewItems, _artist.MonitorNewItemFilter), Times.Once());
         }
 
         [Test]

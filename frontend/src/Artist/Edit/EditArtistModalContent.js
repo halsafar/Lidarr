@@ -1,7 +1,9 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import ArtistMetadataProfilePopoverContent from 'AddArtist/ArtistMetadataProfilePopoverContent';
+import ArtistMonitorNewItemsFilterPopoverContent from 'AddArtist/ArtistMonitorNewItemsFilterPopoverContent';
 import ArtistMonitorNewItemsOptionsPopoverContent from 'AddArtist/ArtistMonitorNewItemsOptionsPopoverContent';
+import monitorNewItemsFilterOptions from 'AddArtist/monitorNewItemsFilterOptions';
 import MoveArtistModal from 'Artist/MoveArtist/MoveArtistModal';
 import Form from 'Components/Form/Form';
 import FormGroup from 'Components/Form/FormGroup';
@@ -79,6 +81,7 @@ class EditArtistModalContent extends Component {
     const {
       monitored,
       monitorNewItems,
+      monitorNewItemFilter,
       qualityProfileId,
       metadataProfileId,
       path,
@@ -103,6 +106,25 @@ class EditArtistModalContent extends Component {
                 name="monitored"
                 helpText={translate('MonitoredHelpText')}
                 {...monitored}
+                onChange={onInputChange}
+              />
+            </FormGroup>
+
+            <FormGroup>
+              <FormLabel>
+                {translate('MonitorNewItemsFilter')}
+                <Popover
+                  anchor={<Icon name={icons.INFO} />}
+                  title={translate('MonitorNewItemsFilter')}
+                  body={<ArtistMonitorNewItemsFilterPopoverContent />}
+                  position={tooltipPositions.RIGHT}
+                />
+              </FormLabel>
+              <FormInputGroup
+                type={inputTypes.MONITOR_ALBUM_FILTERS}
+                name="monitorNewItemFilter"
+                value={monitorNewItemFilter.value}
+                values={monitorNewItemsFilterOptions}
                 onChange={onInputChange}
               />
             </FormGroup>

@@ -43,7 +43,7 @@ namespace NzbDrone.Core.Music
             }
 
             _logger.Info("[{0}] was recently added, performing post-add actions", artist.Name);
-            _albumMonitoredService.SetAlbumMonitoredStatus(artist, addOptions);
+            _albumMonitoredService.SetAlbumMonitoredStatus(artist, addOptions, artist.MonitorNewItemFilter);
 
             _eventAggregator.PublishEvent(new ArtistAddCompletedEvent(artist));
 

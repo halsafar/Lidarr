@@ -5,6 +5,7 @@ export const DEVICE = 'device';
 export const KEY_VALUE_LIST = 'keyValueList';
 export const PLAYLIST = 'playlist';
 export const MONITOR_ALBUMS_SELECT = 'monitorAlbumsSelect';
+export const MONITOR_ALBUM_FILTERS = 'monitorNewItemsFilterSelect';
 export const MONITOR_NEW_ITEMS_SELECT = 'monitorNewItemsSelect';
 export const FLOAT = 'float';
 export const NUMBER = 'number';
@@ -37,6 +38,7 @@ export const all = [
   KEY_VALUE_LIST,
   PLAYLIST,
   MONITOR_ALBUMS_SELECT,
+  MONITOR_ALBUM_FILTERS,
   MONITOR_NEW_ITEMS_SELECT,
   FLOAT,
   NUMBER,

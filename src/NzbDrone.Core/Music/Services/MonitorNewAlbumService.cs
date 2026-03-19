@@ -7,7 +7,7 @@ namespace NzbDrone.Core.Music
 {
     public interface IMonitorNewAlbumService
     {
-        bool ShouldMonitorNewAlbum(Album addedAlbum, List<Album> existingAlbums, NewItemMonitorTypes monitorNewItems);
+        bool ShouldMonitorNewAlbum(Album addedAlbum, List<Album> existingAlbums, NewItemMonitorTypes monitorNewItems, MonitorAlbumTypeFilter filter);
     }
 
     public class MonitorNewAlbumService : IMonitorNewAlbumService
@@ -19,11 +19,17 @@ namespace NzbDrone.Core.Music
             _logger = logger;
         }
 
-        public bool ShouldMonitorNewAlbum(Album addedAlbum, List<Album> existingAlbums, NewItemMonitorTypes monitorNewItems)
+        public bool ShouldMonitorNewAlbum(Album addedAlbum, List<Album> existingAlbums, NewItemMonitorTypes monitorNewItems, MonitorAlbumTypeFilter filter)
         {
             if (monitorNewItems == NewItemMonitorTypes.None)
             {
                 _logger.Trace("Album '{0}' will not be monitored: Monitor setting is set to 'None'", addedAlbum.Title);
+                return false;
+            }
+
+            if (!MonitorAlbumTypeFilterExtensions.PassesAlbumTypeFilter(addedAlbum, filter))
+            {
+                _logger.Trace("Album '{0}' will not be monitored: Does not match album type filter", addedAlbum.Title);
                 return false;
             }
 

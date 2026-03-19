@@ -2,7 +2,9 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import ArtistMetadataProfilePopoverContent from 'AddArtist/ArtistMetadataProfilePopoverContent';
 import ArtistMonitoringOptionsPopoverContent from 'AddArtist/ArtistMonitoringOptionsPopoverContent';
+import ArtistMonitorNewItemsFilterPopoverContent from 'AddArtist/ArtistMonitorNewItemsFilterPopoverContent';
 import ArtistMonitorNewItemsOptionsPopoverContent from 'AddArtist/ArtistMonitorNewItemsOptionsPopoverContent';
+import monitorNewItemsFilterOptions from 'AddArtist/monitorNewItemsFilterOptions';
 import Form from 'Components/Form/Form';
 import FormGroup from 'Components/Form/FormGroup';
 import FormInputGroup from 'Components/Form/FormInputGroup';
@@ -45,6 +47,7 @@ function EditRootFolderModalContent(props) {
     defaultMetadataProfileId,
     defaultMonitorOption,
     defaultNewItemMonitorOption,
+    defaultMonitorNewItemFilter,
     defaultTags
   } = item;
 
@@ -148,6 +151,31 @@ function EditRootFolderModalContent(props) {
                   {...defaultNewItemMonitorOption}
                   onChange={onInputChange}
                   helpText={translate('MonitorNewItemsHelpText')}
+                />
+              </FormGroup>
+
+              <FormGroup>
+                <FormLabel>
+                  {translate('MonitorNewItemsFilter')}
+                  <Popover
+                    anchor={
+                      <Icon
+                        className={styles.labelIcon}
+                        name={icons.INFO}
+                      />
+                    }
+                    title={translate('MonitorNewItemsFilter')}
+                    body={<ArtistMonitorNewItemsFilterPopoverContent />}
+                    position={tooltipPositions.RIGHT}
+                  />
+                </FormLabel>
+
+                <FormInputGroup
+                  type={inputTypes.MONITOR_ALBUM_FILTERS}
+                  name="defaultMonitorNewItemFilter"
+                  value={defaultMonitorNewItemFilter.value}
+                  values={monitorNewItemsFilterOptions}
+                  onChange={onInputChange}
                 />
               </FormGroup>
 

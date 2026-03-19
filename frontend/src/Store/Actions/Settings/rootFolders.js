@@ -52,6 +52,7 @@ export default {
       defaultMetadataProfileId: 0,
       defaultMonitorOption: monitorOptions[0].key,
       defaultNewItemMonitorOption: monitorNewItemsOptions[0].key,
+      defaultMonitorNewItemFilter: 0,
       defaultTags: []
     },
     isSaving: false,

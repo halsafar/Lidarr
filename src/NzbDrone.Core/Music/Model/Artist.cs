@@ -22,6 +22,7 @@ namespace NzbDrone.Core.Music
         public string SortName { get; set; }
         public bool Monitored { get; set; }
         public NewItemMonitorTypes MonitorNewItems { get; set; }
+        public MonitorAlbumTypeFilter MonitorNewItemFilter { get; set; }
         public DateTime? LastInfoSync { get; set; }
         public string Path { get; set; }
         public string RootFolderPath { get; set; }

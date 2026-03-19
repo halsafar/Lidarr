@@ -258,7 +258,7 @@ namespace NzbDrone.Core.Music
             foreach (var album in children.Added)
             {
                 // all existing child albums count as updated as we don't have proper data yet.
-                album.Monitored = _monitorNewAlbumService.ShouldMonitorNewAlbum(album, children.Updated, entity.MonitorNewItems);
+                album.Monitored = _monitorNewAlbumService.ShouldMonitorNewAlbum(album, children.Updated, entity.MonitorNewItems, entity.MonitorNewItemFilter);
             }
         }
 

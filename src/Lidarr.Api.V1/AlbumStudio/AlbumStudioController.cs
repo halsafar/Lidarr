@@ -42,7 +42,8 @@ namespace Lidarr.Api.V1.AlbumStudio
                     artist.MonitorNewItems = resource.MonitorNewItems.Value;
                 }
 
-                _albumMonitoredService.SetAlbumMonitoredStatus(artist, resource.MonitoringOptions);
+                var filter = resource.MonitorNewItemFilter ?? MonitorAlbumTypeFilter.None;
+                _albumMonitoredService.SetAlbumMonitoredStatus(artist, resource.MonitoringOptions, filter);
             }
 
             return Accepted(new object());

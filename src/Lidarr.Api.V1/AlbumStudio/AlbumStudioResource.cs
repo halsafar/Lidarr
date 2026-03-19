@@ -8,5 +8,6 @@ namespace Lidarr.Api.V1.AlbumStudio
         public List<AlbumStudioArtistResource> Artist { get; set; }
         public MonitoringOptions MonitoringOptions { get; set; }
         public NewItemMonitorTypes? MonitorNewItems { get; set; }
+        public MonitorAlbumTypeFilter? MonitorNewItemFilter { get; set; }
     }
 }

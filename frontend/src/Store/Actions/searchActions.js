@@ -34,6 +34,7 @@ export const defaultState = {
     rootFolderPath: '',
     monitor: monitorOptions[0].key,
     monitorNewItems: monitorNewItemsOptions[0].key,
+    monitorNewItemFilter: 0,
     qualityProfileId: 0,
     metadataProfileId: 0,
     searchForMissingAlbums: false,

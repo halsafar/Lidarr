@@ -3,6 +3,8 @@ import React, { Component } from 'react';
 import ArtistMetadataProfilePopoverContent from 'AddArtist/ArtistMetadataProfilePopoverContent';
 import ArtistMonitoringOptionsPopoverContent from 'AddArtist/ArtistMonitoringOptionsPopoverContent';
 import ArtistMonitorNewItemsOptionsPopoverContent from 'AddArtist/ArtistMonitorNewItemsOptionsPopoverContent';
+import ArtistMonitorNewItemsFilterPopoverContent from 'AddArtist/ArtistMonitorNewItemsFilterPopoverContent';
+import monitorNewItemsFilterOptions from 'AddArtist/monitorNewItemsFilterOptions';
 import Form from 'Components/Form/Form';
 import FormGroup from 'Components/Form/FormGroup';
 import FormInputGroup from 'Components/Form/FormInputGroup';
@@ -34,6 +36,7 @@ class AddArtistOptionsForm extends Component {
       rootFolderPath,
       monitor,
       monitorNewItems,
+      monitorNewItemFilter,
       qualityProfileId,
       metadataProfileId,
       includeNoneMetadataProfile,
@@ -92,6 +95,25 @@ class AddArtistOptionsForm extends Component {
             helpText={translate('MonitoringOptionsHelpText')}
             onChange={onInputChange}
             {...monitor}
+          />
+        </FormGroup>
+
+        <FormGroup>
+          <FormLabel>
+            {translate('MonitorNewItemsFilter')}
+            <Popover
+              anchor={<Icon name={icons.INFO} />}
+              title={translate('MonitorNewItemsFilter')}
+              body={<ArtistMonitorNewItemsFilterPopoverContent />}
+              position={tooltipPositions.RIGHT}
+            />
+          </FormLabel>
+          <FormInputGroup
+            type={inputTypes.MONITOR_ALBUM_FILTERS}
+            name="monitorNewItemFilter"
+            value={monitorNewItemFilter.value}
+            values={monitorNewItemsFilterOptions}
+            onChange={onInputChange}
           />
         </FormGroup>
 
@@ -182,6 +204,7 @@ class AddArtistOptionsForm extends Component {
 AddArtistOptionsForm.propTypes = {
   rootFolderPath: PropTypes.object,
   monitor: PropTypes.object.isRequired,
+  monitorNewItemFilter: PropTypes.object.isRequired,
   monitorNewItems: PropTypes.object.isRequired,
   qualityProfileId: PropTypes.object,
   metadataProfileId: PropTypes.object,

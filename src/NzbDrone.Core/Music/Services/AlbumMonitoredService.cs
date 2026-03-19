@@ -7,7 +7,7 @@ namespace NzbDrone.Core.Music
 {
     public interface IAlbumMonitoredService
     {
-        void SetAlbumMonitoredStatus(Artist artist, MonitoringOptions monitoringOptions);
+        void SetAlbumMonitoredStatus(Artist artist, MonitoringOptions monitoringOptions, MonitorAlbumTypeFilter albumTypeFilter = MonitorAlbumTypeFilter.None);
     }
 
     public class AlbumMonitoredService : IAlbumMonitoredService
@@ -23,7 +23,7 @@ namespace NzbDrone.Core.Music
             _logger = logger;
         }
 
-        public void SetAlbumMonitoredStatus(Artist artist, MonitoringOptions monitoringOptions)
+        public void SetAlbumMonitoredStatus(Artist artist, MonitoringOptions monitoringOptions, MonitorAlbumTypeFilter albumTypeFilter = MonitorAlbumTypeFilter.None)
         {
             // Update the artist without changing the albums
             if (monitoringOptions == null)
@@ -46,8 +46,8 @@ namespace NzbDrone.Core.Music
             // If specific albums are passed use those instead of the monitoring options.
             if (monitoredAlbums.Any())
             {
-                ToggleAlbumsMonitoredState(albums.Where(s => monitoredAlbums.Contains(s.ForeignAlbumId)), true);
-                ToggleAlbumsMonitoredState(albums.Where(s => !monitoredAlbums.Contains(s.ForeignAlbumId)), false);
+                ToggleAlbumsMonitoredState(albums.Where(s => monitoredAlbums.Contains(s.ForeignAlbumId)), true, albumTypeFilter);
+                ToggleAlbumsMonitoredState(albums.Where(s => !monitoredAlbums.Contains(s.ForeignAlbumId)), false, albumTypeFilter);
             }
             else
             {
@@ -58,39 +58,39 @@ namespace NzbDrone.Core.Music
                 {
                     case MonitorTypes.All:
                         _logger.Debug("Monitoring all albums");
-                        ToggleAlbumsMonitoredState(albums, true);
+                        ToggleAlbumsMonitoredState(albums, true, albumTypeFilter);
                         break;
                     case MonitorTypes.Future:
                         _logger.Debug("Unmonitoring Albums with Files");
-                        ToggleAlbumsMonitoredState(albums.Where(e => albumsWithFiles.Select(c => c.Id).Contains(e.Id)), false);
+                        ToggleAlbumsMonitoredState(albums.Where(e => albumsWithFiles.Select(c => c.Id).Contains(e.Id)), false, albumTypeFilter);
                         _logger.Debug("Unmonitoring Albums without Files");
-                        ToggleAlbumsMonitoredState(albums.Where(e => albumsWithoutFiles.Select(c => c.Id).Contains(e.Id)), false);
+                        ToggleAlbumsMonitoredState(albums.Where(e => albumsWithoutFiles.Select(c => c.Id).Contains(e.Id)), false, albumTypeFilter);
                         break;
                     case MonitorTypes.Missing:
                         _logger.Debug("Unmonitoring Albums with Files");
-                        ToggleAlbumsMonitoredState(albums.Where(e => albumsWithFiles.Select(c => c.Id).Contains(e.Id)), false);
+                        ToggleAlbumsMonitoredState(albums.Where(e => albumsWithFiles.Select(c => c.Id).Contains(e.Id)), false, albumTypeFilter);
                         _logger.Debug("Monitoring Albums without Files");
-                        ToggleAlbumsMonitoredState(albums.Where(e => albumsWithoutFiles.Select(c => c.Id).Contains(e.Id)), true);
+                        ToggleAlbumsMonitoredState(albums.Where(e => albumsWithoutFiles.Select(c => c.Id).Contains(e.Id)), true, albumTypeFilter);
                         break;
                     case MonitorTypes.Existing:
                         _logger.Debug("Monitoring Albums with Files");
-                        ToggleAlbumsMonitoredState(albums.Where(e => albumsWithFiles.Select(c => c.Id).Contains(e.Id)), true);
+                        ToggleAlbumsMonitoredState(albums.Where(e => albumsWithFiles.Select(c => c.Id).Contains(e.Id)), true, albumTypeFilter);
                         _logger.Debug("Unmonitoring Albums without Files");
-                        ToggleAlbumsMonitoredState(albums.Where(e => albumsWithoutFiles.Select(c => c.Id).Contains(e.Id)), false);
+                        ToggleAlbumsMonitoredState(albums.Where(e => albumsWithoutFiles.Select(c => c.Id).Contains(e.Id)), false, albumTypeFilter);
                         break;
                     case MonitorTypes.Latest:
                         _logger.Debug("Monitoring latest album");
-                        ToggleAlbumsMonitoredState(albums, false);
-                        ToggleAlbumsMonitoredState(albums.OrderByDescending(e => e.ReleaseDate).Take(1), true);
+                        ToggleAlbumsMonitoredState(albums, false, albumTypeFilter);
+                        ToggleAlbumsMonitoredState(albums.OrderByDescending(e => e.ReleaseDate).Take(1), true, albumTypeFilter);
                         break;
                     case MonitorTypes.First:
                         _logger.Debug("Monitoring first album");
-                        ToggleAlbumsMonitoredState(albums, false);
-                        ToggleAlbumsMonitoredState(albums.OrderBy(e => e.ReleaseDate).Take(1), true);
+                        ToggleAlbumsMonitoredState(albums, false, albumTypeFilter);
+                        ToggleAlbumsMonitoredState(albums.OrderBy(e => e.ReleaseDate).Take(1), true, albumTypeFilter);
                         break;
                     case MonitorTypes.None:
                         _logger.Debug("Unmonitoring all albums");
-                        ToggleAlbumsMonitoredState(albums, false);
+                        ToggleAlbumsMonitoredState(albums, false, albumTypeFilter);
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
@@ -101,11 +101,19 @@ namespace NzbDrone.Core.Music
             _artistService.UpdateArtist(artist);
         }
 
-        private void ToggleAlbumsMonitoredState(IEnumerable<Album> albums, bool monitored)
+        private void ToggleAlbumsMonitoredState(IEnumerable<Album> albums, bool monitored, MonitorAlbumTypeFilter albumTypeFilter = MonitorAlbumTypeFilter.None)
         {
             foreach (var album in albums)
             {
-                album.Monitored = monitored;
+                // Only apply monitored state if the album passes the type filter
+                if (monitored && !MonitorAlbumTypeFilterExtensions.PassesAlbumTypeFilter(album, albumTypeFilter))
+                {
+                    album.Monitored = false;
+                }
+                else
+                {
+                    album.Monitored = monitored;
+                }
             }
         }
     }

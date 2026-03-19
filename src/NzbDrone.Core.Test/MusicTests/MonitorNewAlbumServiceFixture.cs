@@ -41,7 +41,7 @@ namespace NzbDrone.Core.Test.AlbumTests
         {
             foreach (var album in _albums)
             {
-                Subject.ShouldMonitorNewAlbum(album, _albums, NewItemMonitorTypes.All).Should().BeTrue();
+                Subject.ShouldMonitorNewAlbum(album, _albums, NewItemMonitorTypes.All, MonitorAlbumTypeFilter.None).Should().BeTrue();
             }
         }
 
@@ -50,18 +50,18 @@ namespace NzbDrone.Core.Test.AlbumTests
         {
             foreach (var album in _albums)
             {
-                Subject.ShouldMonitorNewAlbum(album, _albums, NewItemMonitorTypes.None).Should().BeFalse();
+                Subject.ShouldMonitorNewAlbum(album, _albums, NewItemMonitorTypes.None, MonitorAlbumTypeFilter.None).Should().BeFalse();
             }
         }
 
         [Test]
         public void should_only_monitor_new_with_new()
         {
-            Subject.ShouldMonitorNewAlbum(_albums[0], _albums, NewItemMonitorTypes.New).Should().BeTrue();
+            Subject.ShouldMonitorNewAlbum(_albums[0], _albums, NewItemMonitorTypes.New, MonitorAlbumTypeFilter.None).Should().BeTrue();
 
             foreach (var album in _albums.Skip(1))
             {
-                Subject.ShouldMonitorNewAlbum(album, _albums, NewItemMonitorTypes.New).Should().BeFalse();
+                Subject.ShouldMonitorNewAlbum(album, _albums, NewItemMonitorTypes.New, MonitorAlbumTypeFilter.None).Should().BeFalse();
             }
         }
 
@@ -79,7 +79,7 @@ namespace NzbDrone.Core.Test.AlbumTests
                 .Build()
                 .ToList();
 
-            Subject.ShouldMonitorNewAlbum(albumWithNullDate, existingAlbums, NewItemMonitorTypes.New)
+            Subject.ShouldMonitorNewAlbum(albumWithNullDate, existingAlbums, NewItemMonitorTypes.New, MonitorAlbumTypeFilter.None)
                 .Should().BeFalse();
         }
 
@@ -97,7 +97,7 @@ namespace NzbDrone.Core.Test.AlbumTests
                 .Build()
                 .ToList();
 
-            Subject.ShouldMonitorNewAlbum(newAlbumWithDate, existingAlbumsWithoutDates, NewItemMonitorTypes.New)
+            Subject.ShouldMonitorNewAlbum(newAlbumWithDate, existingAlbumsWithoutDates, NewItemMonitorTypes.New, MonitorAlbumTypeFilter.None)
                 .Should().BeTrue();
         }
 
@@ -117,7 +117,7 @@ namespace NzbDrone.Core.Test.AlbumTests
                 .Build()
                 .ToList();
 
-            Subject.ShouldMonitorNewAlbum(newerAlbum, existingAlbums, NewItemMonitorTypes.New)
+            Subject.ShouldMonitorNewAlbum(newerAlbum, existingAlbums, NewItemMonitorTypes.New, MonitorAlbumTypeFilter.None)
                 .Should().BeTrue();
         }
 
@@ -137,7 +137,7 @@ namespace NzbDrone.Core.Test.AlbumTests
                 .Build()
                 .ToList();
 
-            Subject.ShouldMonitorNewAlbum(olderAlbum, existingAlbums, NewItemMonitorTypes.New)
+            Subject.ShouldMonitorNewAlbum(olderAlbum, existingAlbums, NewItemMonitorTypes.New, MonitorAlbumTypeFilter.None)
                 .Should().BeFalse();
         }
 
@@ -158,7 +158,7 @@ namespace NzbDrone.Core.Test.AlbumTests
                 .Build()
                 .ToList();
 
-            Subject.ShouldMonitorNewAlbum(albumWithSameDate, existingAlbums, NewItemMonitorTypes.New)
+            Subject.ShouldMonitorNewAlbum(albumWithSameDate, existingAlbums, NewItemMonitorTypes.New, MonitorAlbumTypeFilter.None)
                 .Should().BeTrue();
         }
 
@@ -178,7 +178,7 @@ namespace NzbDrone.Core.Test.AlbumTests
                 .Build()
                 .ToList();
 
-            Subject.ShouldMonitorNewAlbum(newAlbum, existingAlbums, NewItemMonitorTypes.New)
+            Subject.ShouldMonitorNewAlbum(newAlbum, existingAlbums, NewItemMonitorTypes.New, MonitorAlbumTypeFilter.None)
                 .Should().BeTrue();
         }
 
@@ -187,7 +187,7 @@ namespace NzbDrone.Core.Test.AlbumTests
         {
             var album = _albums.First();
             Assert.Throws<NotImplementedException>(() =>
-                Subject.ShouldMonitorNewAlbum(album, _albums, (NewItemMonitorTypes)999));
+                Subject.ShouldMonitorNewAlbum(album, _albums, (NewItemMonitorTypes)999, MonitorAlbumTypeFilter.None));
         }
 
         [Test]
@@ -204,7 +204,7 @@ namespace NzbDrone.Core.Test.AlbumTests
                 .Build()
                 .ToList();
 
-            Subject.ShouldMonitorNewAlbum(albumWithNullDate, existingAlbumsWithoutDates, NewItemMonitorTypes.New)
+            Subject.ShouldMonitorNewAlbum(albumWithNullDate, existingAlbumsWithoutDates, NewItemMonitorTypes.New, MonitorAlbumTypeFilter.None)
                 .Should().BeTrue();
         }
     }

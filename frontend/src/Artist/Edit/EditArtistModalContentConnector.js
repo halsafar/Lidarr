@@ -40,6 +40,7 @@ function createMapStateToProps() {
       const artistSettings = _.pick(artist, [
         'monitored',
         'monitorNewItems',
+        'monitorNewItemFilter',
         'qualityProfileId',
         'metadataProfileId',
         'path',
@@ -109,6 +110,7 @@ class EditArtistModalContentConnector extends Component {
 
 EditArtistModalContentConnector.propTypes = {
   artistId: PropTypes.number,
+  monitorNewItemFilter: PropTypes.number.isRequired,
   isSaving: PropTypes.bool.isRequired,
   saveError: PropTypes.object,
   dispatchSetArtistValue: PropTypes.func.isRequired,
