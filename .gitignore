@@ -168,6 +168,9 @@ node_modules.nosync
 # Ignore Jetbrains IntelliJ Workspace Directories
 .idea/
 
+# DevContainer
+dotnet/runfile*/**
+
 # Ignore credentials
 .ghcr_creds
 .build_version
