@@ -25,6 +25,8 @@ namespace NzbDrone.Core.Jobs
         IList<ScheduledTask> GetPending();
         List<ScheduledTask> GetAll();
         DateTime GetNextExecution(Type type);
+        void UpdateInterval(int id, int interval);
+        int GetDefaultInterval(string typeName);
     }
 
     public class TaskManager : ITaskManager, IHandle<ApplicationStartedEvent>, IHandle<CommandExecutedEvent>, IHandleAsync<ConfigSavedEvent>
@@ -63,69 +65,7 @@ namespace NzbDrone.Core.Jobs
 
         public void Handle(ApplicationStartedEvent message)
         {
-            var defaultTasks = new List<ScheduledTask>
-                {
-                    new ScheduledTask
-                    {
-                        Interval = 1,
-                        TypeName = typeof(RefreshMonitoredDownloadsCommand).FullName,
-                        Priority = CommandPriority.High
-                    },
-
-                    new ScheduledTask
-                    {
-                        Interval = 5,
-                        TypeName = typeof(MessagingCleanupCommand).FullName
-                    },
-
-                    new ScheduledTask
-                    {
-                        Interval = 6 * 60,
-                        TypeName = typeof(ApplicationUpdateCheckCommand).FullName
-                    },
-
-                    new ScheduledTask
-                    {
-                        Interval = 6 * 60,
-                        TypeName = typeof(CheckHealthCommand).FullName
-                    },
-
-                    new ScheduledTask
-                    {
-                        Interval = 24 * 60,
-                        TypeName = typeof(RefreshArtistCommand).FullName
-                    },
-
-                    new ScheduledTask
-                    {
-                        Interval = 24 * 60,
-                        TypeName = typeof(RescanFoldersCommand).FullName
-                    },
-
-                    new ScheduledTask
-                    {
-                        Interval = 24 * 60,
-                        TypeName = typeof(HousekeepingCommand).FullName
-                    },
-
-                    new ScheduledTask
-                    {
-                        Interval = GetBackupInterval(),
-                        TypeName = typeof(BackupCommand).FullName
-                    },
-
-                    new ScheduledTask
-                    {
-                        Interval = 5,
-                        TypeName = typeof(ImportListSyncCommand).FullName
-                    },
-
-                    new ScheduledTask
-                    {
-                        Interval = GetRssSyncInterval(),
-                        TypeName = typeof(RssSyncCommand).FullName
-                    }
-                };
+            var defaultTasks = GetDefaultTasks();
 
             var currentTasks = _scheduledTaskRepository.All().ToList();
 
@@ -144,10 +84,10 @@ namespace NzbDrone.Core.Jobs
             {
                 var currentDefinition = currentTasks.SingleOrDefault(c => c.TypeName == defaultTask.TypeName) ?? defaultTask;
 
-                currentDefinition.Interval = defaultTask.Interval;
-
                 if (currentDefinition.Id == 0)
                 {
+                    // New task — seed with the default interval
+                    currentDefinition.Interval = defaultTask.Interval;
                     currentDefinition.LastExecution = DateTime.UtcNow;
                 }
 
@@ -224,6 +164,86 @@ namespace NzbDrone.Core.Jobs
 
             _cache.Find(rss.TypeName).Interval = rss.Interval;
             _cache.Find(backup.TypeName).Interval = backup.Interval;
+        }
+
+        public void UpdateInterval(int id, int interval)
+        {
+            var task = _scheduledTaskRepository.Get(id);
+            task.Interval = interval;
+            _scheduledTaskRepository.Update(task);
+            _cache.Find(task.TypeName).Interval = interval;
+        }
+
+        public int GetDefaultInterval(string typeName)
+        {
+            return GetDefaultTasks().SingleOrDefault(t => t.TypeName == typeName)?.Interval ?? 0;
+        }
+
+        private List<ScheduledTask> GetDefaultTasks()
+        {
+            return new List<ScheduledTask>
+            {
+                new ScheduledTask
+                {
+                    Interval = 1,
+                    TypeName = typeof(RefreshMonitoredDownloadsCommand).FullName,
+                    Priority = CommandPriority.High
+                },
+
+                new ScheduledTask
+                {
+                    Interval = 5,
+                    TypeName = typeof(MessagingCleanupCommand).FullName
+                },
+
+                new ScheduledTask
+                {
+                    Interval = 6 * 60,
+                    TypeName = typeof(ApplicationUpdateCheckCommand).FullName
+                },
+
+                new ScheduledTask
+                {
+                    Interval = 6 * 60,
+                    TypeName = typeof(CheckHealthCommand).FullName
+                },
+
+                new ScheduledTask
+                {
+                    Interval = 24 * 60,
+                    TypeName = typeof(RefreshArtistCommand).FullName
+                },
+
+                new ScheduledTask
+                {
+                    Interval = 24 * 60,
+                    TypeName = typeof(RescanFoldersCommand).FullName
+                },
+
+                new ScheduledTask
+                {
+                    Interval = 24 * 60,
+                    TypeName = typeof(HousekeepingCommand).FullName
+                },
+
+                new ScheduledTask
+                {
+                    Interval = GetBackupInterval(),
+                    TypeName = typeof(BackupCommand).FullName
+                },
+
+                new ScheduledTask
+                {
+                    Interval = 5,
+                    TypeName = typeof(ImportListSyncCommand).FullName
+                },
+
+                new ScheduledTask
+                {
+                    Interval = GetRssSyncInterval(),
+                    TypeName = typeof(RssSyncCommand).FullName
+                }
+            };
         }
     }
 }

@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
 import { executeCommand } from 'Store/Actions/commandActions';
-import { fetchTask } from 'Store/Actions/systemActions';
+import { fetchTask, saveTask } from 'Store/Actions/systemActions';
 import createCommandsSelector from 'Store/Selectors/createCommandsSelector';
 import createUISettingsSelector from 'Store/Selectors/createUISettingsSelector';
 import { findCommand, isCommandExecuting } from 'Utilities/Command';
@@ -43,6 +43,10 @@ function createMapDispatchToProps(dispatch, props) {
       dispatch(executeCommand({
         name: taskName
       }));
+    },
+
+    onIntervalChange(id, interval) {
+      dispatch(saveTask({ id, interval }));
     }
   };
 }

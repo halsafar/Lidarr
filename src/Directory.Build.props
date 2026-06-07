@@ -130,6 +130,11 @@
     <PackageReference Include="NunitXml.TestLogger" Version="3.1.20" />
   </ItemGroup>
 
+  <PropertyGroup>
+    <EnableAnalyzers Condition="'$(EnableAnalyzers)'==''">false</EnableAnalyzers>
+    <RunAnalyzers Condition="'$(EnableAnalyzers)'=='false'">false</RunAnalyzers>
+  </PropertyGroup>
+
   <PropertyGroup Condition="'$(LidarrProject)'=='true' and '$(EnableAnalyzers)'=='false'">
     <!-- FXCop Built into Net5 SDK now as NETAnalyzers, Enabled by default on net5 projects -->
     <EnableNETAnalyzers>false</EnableNETAnalyzers>

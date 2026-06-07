@@ -198,6 +198,7 @@ export const FETCH_DISK_SPACE = 'system/diskSpace/fetchDiskSPace';
 
 export const FETCH_TASK = 'system/tasks/fetchTask';
 export const FETCH_TASKS = 'system/tasks/fetchTasks';
+export const SAVE_TASK = 'system/tasks/saveTask';
 
 export const FETCH_BACKUPS = 'system/backups/fetchBackups';
 export const RESTORE_BACKUP = 'system/backups/restoreBackup';
@@ -234,6 +235,7 @@ export const fetchDiskSpace = createThunk(FETCH_DISK_SPACE);
 
 export const fetchTask = createThunk(FETCH_TASK);
 export const fetchTasks = createThunk(FETCH_TASKS);
+export const saveTask = createThunk(SAVE_TASK);
 
 export const fetchBackups = createThunk(FETCH_BACKUPS);
 export const restoreBackup = createThunk(RESTORE_BACKUP);
@@ -270,6 +272,34 @@ export const actionHandlers = handleThunks({
   [FETCH_DISK_SPACE]: createFetchHandler('system.diskSpace', '/diskspace'),
   [FETCH_TASK]: createFetchHandler('system.tasks', '/system/task'),
   [FETCH_TASKS]: createFetchHandler('system.tasks', '/system/task'),
+
+  [SAVE_TASK]: function(getState, payload, dispatch) {
+    const { id, interval } = payload;
+
+    const promise = createAjaxRequest({
+      url: `/system/task/${id}`,
+      method: 'PUT',
+      dataType: 'json',
+      data: JSON.stringify({ id, interval })
+    }).request;
+
+    promise.done((data) => {
+      dispatch(set({
+        section: 'system.tasks',
+        isSaving: false,
+        saveError: null
+      }));
+
+      dispatch(fetchTask({ id }));
+    });
+
+    promise.fail(() => {
+      dispatch(set({
+        section: 'system.tasks',
+        isSaving: false
+      }));
+    });
+  },
 
   [FETCH_BACKUPS]: createFetchHandler(backupsSection, '/system/backup'),
 

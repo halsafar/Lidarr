@@ -1,6 +1,7 @@
 import moment from 'moment';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import IconButton from 'Components/Link/IconButton';
 import SpinnerIconButton from 'Components/Link/SpinnerIconButton';
 import TableRowCell from 'Components/Table/Cells/TableRowCell';
 import TableRow from 'Components/Table/TableRow';
@@ -8,6 +9,7 @@ import { icons } from 'Helpers/Props';
 import formatDate from 'Utilities/Date/formatDate';
 import formatDateTime from 'Utilities/Date/formatDateTime';
 import formatTimeSpan from 'Utilities/Date/formatTimeSpan';
+import EditTaskIntervalModal from './EditTaskIntervalModal';
 import styles from './ScheduledTaskRow.css';
 
 function getFormattedDates(props) {
@@ -42,7 +44,10 @@ class ScheduledTaskRow extends Component {
   constructor(props, context) {
     super(props, context);
 
-    this.state = getFormattedDates(props);
+    this.state = {
+      ...getFormattedDates(props),
+      isEditModalOpen: false
+    };
 
     this._updateTimeoutId = null;
   }
@@ -84,6 +89,19 @@ class ScheduledTaskRow extends Component {
     }, timeout);
   }
 
+  onEditPress = () => {
+    this.setState({ isEditModalOpen: true });
+  };
+
+  onEditModalClose = () => {
+    this.setState({ isEditModalOpen: false });
+  };
+
+  onIntervalSave = (interval) => {
+    this.setState({ isEditModalOpen: false });
+    this.props.onIntervalChange(this.props.id, interval);
+  };
+
   //
   // Render
 
@@ -91,6 +109,7 @@ class ScheduledTaskRow extends Component {
     const {
       name,
       interval,
+      defaultInterval,
       lastExecution,
       lastStartTime,
       lastDuration,
@@ -104,7 +123,8 @@ class ScheduledTaskRow extends Component {
 
     const {
       lastExecutionTime,
-      nextExecutionTime
+      nextExecutionTime,
+      isEditModalOpen
     } = this.state;
 
     const isDisabled = interval === 0;
@@ -172,6 +192,11 @@ class ScheduledTaskRow extends Component {
         <TableRowCell
           className={styles.actions}
         >
+          <IconButton
+            name={icons.EDIT}
+            onPress={this.onEditPress}
+          />
+
           <SpinnerIconButton
             name={icons.REFRESH}
             spinningName={icons.REFRESH}
@@ -179,14 +204,25 @@ class ScheduledTaskRow extends Component {
             onPress={onExecutePress}
           />
         </TableRowCell>
+
+        <EditTaskIntervalModal
+          isOpen={isEditModalOpen}
+          name={name}
+          interval={interval}
+          defaultInterval={defaultInterval}
+          onSave={this.onIntervalSave}
+          onModalClose={this.onEditModalClose}
+        />
       </TableRow>
     );
   }
 }
 
 ScheduledTaskRow.propTypes = {
+  id: PropTypes.number.isRequired,
   name: PropTypes.string.isRequired,
   interval: PropTypes.number.isRequired,
+  defaultInterval: PropTypes.number.isRequired,
   lastExecution: PropTypes.string.isRequired,
   lastStartTime: PropTypes.string.isRequired,
   lastDuration: PropTypes.string.isRequired,
@@ -197,7 +233,8 @@ ScheduledTaskRow.propTypes = {
   shortDateFormat: PropTypes.string.isRequired,
   longDateFormat: PropTypes.string.isRequired,
   timeFormat: PropTypes.string.isRequired,
-  onExecutePress: PropTypes.func.isRequired
+  onExecutePress: PropTypes.func.isRequired,
+  onIntervalChange: PropTypes.func.isRequired
 };
 
 export default ScheduledTaskRow;

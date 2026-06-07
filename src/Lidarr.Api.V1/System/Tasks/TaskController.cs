@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Lidarr.Http;
 using Lidarr.Http.REST;
+using Lidarr.Http.REST.Attributes;
 using Microsoft.AspNetCore.Mvc;
 using NzbDrone.Common.Extensions;
 using NzbDrone.Core.Datastore.Events;
@@ -44,7 +45,22 @@ namespace Lidarr.Api.V1.System.Tasks
             return ConvertToResource(task);
         }
 
-        private static TaskResource ConvertToResource(ScheduledTask scheduledTask)
+        [RestPutById]
+        public ActionResult<TaskResource> UpdateInterval([FromBody] TaskResource resource)
+        {
+            _taskManager.UpdateInterval(resource.Id, resource.Interval);
+
+            var task = _taskManager.GetAll().SingleOrDefault(t => t.Id == resource.Id);
+
+            if (task == null)
+            {
+                return NotFound();
+            }
+
+            return Accepted(ConvertToResource(task));
+        }
+
+        private TaskResource ConvertToResource(ScheduledTask scheduledTask)
         {
             var taskName = scheduledTask.TypeName.Split('.').Last().Replace("Command", "");
 
@@ -54,6 +70,7 @@ namespace Lidarr.Api.V1.System.Tasks
                 Name = taskName.SplitCamelCase(),
                 TaskName = taskName,
                 Interval = scheduledTask.Interval,
+                DefaultInterval = _taskManager.GetDefaultInterval(scheduledTask.TypeName),
                 LastExecution = scheduledTask.LastExecution,
                 LastStartTime = scheduledTask.LastStartTime,
                 NextExecution = scheduledTask.LastExecution.AddMinutes(scheduledTask.Interval)
