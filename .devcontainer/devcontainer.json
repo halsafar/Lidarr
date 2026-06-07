@@ -12,6 +12,9 @@
     "ghcr.io/devcontainers/features/github-cli:1": {},
   },
   "forwardPorts": [8686],
+  "remoteEnv": {
+    "EnableAnalyzers": "false"
+  },
   "customizations": {
     "vscode": {
       "extensions": [
